@@ -65,8 +65,13 @@ const AdminForm = () => {
       year: 'numeric',
       month: 'short',
       day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
     };
-    return new Date(dateString).toLocaleDateString(undefined, options);
+    // Convert Unix timestamp to milliseconds if it's a number
+    const date =
+      typeof dateString === 'number' ? new Date(dateString * 1000) : new Date(dateString);
+    return date.toLocaleDateString(undefined, options);
   };
 
   return (

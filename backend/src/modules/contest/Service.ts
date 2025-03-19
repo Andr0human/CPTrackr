@@ -31,13 +31,13 @@ class ContestService {
 
       const contests = leetcodeResponse.data.data.allContests;
       const currentTime = Math.floor(Date.now() / 1000); // Current time in seconds
-      const twoDaysInSeconds = 2 * 24 * 60 * 60; // 2 days in seconds
+      const sevenDaysInSeconds = 7 * 24 * 60 * 60; // 7 days in seconds
 
       // Filter past contests to only include those less than 2 days old
       const past = contests.filter(
         (contest: any) =>
           contest.startTime + contest.duration <= currentTime &&
-          currentTime - (contest.startTime + contest.duration) <= twoDaysInSeconds
+          currentTime - (contest.startTime + contest.duration) <= sevenDaysInSeconds
       );
 
       // Separate contests into present (ongoing) and future
@@ -76,14 +76,14 @@ class ContestService {
       );
 
       const currentTime = Math.floor(Date.now() / 1000); // Current time in seconds
-      const twoDaysInSeconds = 2 * 24 * 60 * 60; // 2 days in seconds
+      const sevenDaysInSeconds = 2 * 24 * 60 * 60; // 2 days in seconds
 
       // Filter past contests to only include those less than 2 days old
       const pastContests = codechefResponse.data.past_contests.filter((contest: any) => {
         const endTime =
           new Date(contest.contest_start_date_iso).getTime() / 1000 +
           parseInt(contest.contest_duration, 10) * 60;
-        return currentTime - endTime <= twoDaysInSeconds;
+        return currentTime - endTime <= sevenDaysInSeconds;
       });
 
       return [
@@ -114,13 +114,13 @@ class ContestService {
 
       const contests = codeforcesResponse.data.result;
       const currentTime = Math.floor(Date.now() / 1000); // Current time in seconds
-      const twoDaysInSeconds = 2 * 24 * 60 * 60; // 2 days in seconds
+      const sevenDaysInSeconds = 2 * 24 * 60 * 60; // 2 days in seconds
 
       // Filter past contests to only include those less than 2 days old
       const past = contests.filter(
         (contest: any) =>
           contest.phase === 'FINISHED' &&
-          currentTime - (contest.startTimeSeconds + contest.durationSeconds) <= twoDaysInSeconds
+          currentTime - (contest.startTimeSeconds + contest.durationSeconds) <= sevenDaysInSeconds
       );
 
       const upcoming = contests.filter((contest: any) => contest.phase === 'BEFORE');
