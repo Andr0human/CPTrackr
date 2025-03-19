@@ -1,0 +1,77 @@
+.filter-bar {
+  padding: 1.5rem;
+  border-radius: 8px;
+  margin-bottom: 2rem;
+}
+
+.filter-bar.light {
+  background-color: var(--light-card-bg);
+  border: 1px solid var(--light-border);
+}
+
+.filter-bar.dark {
+  background-color: var(--dark-card-bg);
+  border: 1px solid var(--dark-border);
+}
+
+.filter-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.filter-header h3 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.filter-section {
+  margin-bottom: 1.5rem;
+}
+
+.filter-section h4 {
+  margin-bottom: 0.75rem;
+  font-size: 1rem;
+}
+
+.platform-filters, .status-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.platform-checkbox, .status-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+}
+
+.platform-name {
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: white;
+}
+
+.platform-name.codeforces {
+  background-color: var(--codeforces-color);
+}
+
+.platform-name.codechef {
+  background-color: var(--codechef-color);
+}
+
+.platform-name.leetcode {
+  background-color: var(--leetcode-color);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .platform-filters, .status-filters {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+} 

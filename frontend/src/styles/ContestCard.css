@@ -1,0 +1,142 @@
+.contest-card {
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s, box-shadow 0.2s;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.contest-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+}
+
+.contest-card.light {
+  background-color: var(--light-card-bg);
+  border: 1px solid var(--light-border);
+}
+
+.contest-card.dark {
+  background-color: var(--dark-card-bg);
+  border: 1px solid var(--dark-border);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  border-bottom: 1px solid;
+}
+
+.light .card-header {
+  border-color: var(--light-border);
+}
+
+.dark .card-header {
+  border-color: var(--dark-border);
+}
+
+.platform-tag {
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: white;
+}
+
+.platform-tag.codeforces {
+  background-color: var(--codeforces-color);
+}
+
+.platform-tag.codechef {
+  background-color: var(--codechef-color);
+}
+
+.platform-tag.leetcode {
+  background-color: var(--leetcode-color);
+}
+
+.bookmark-btn {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  color: var(--secondary-color);
+  cursor: pointer;
+  transition: color 0.2s;
+  padding: 0.25rem;
+}
+
+.bookmark-btn:hover {
+  color: var(--warning-color);
+}
+
+.contest-title {
+  padding: 1rem;
+  font-size: 1.2rem;
+  margin: 0;
+  flex-grow: 1;
+}
+
+.contest-details {
+  padding: 0 1rem 1rem;
+}
+
+.contest-details p {
+  margin-bottom: 0.5rem;
+}
+
+.time-remaining {
+  color: var(--primary-color);
+  font-weight: 500;
+}
+
+.card-actions {
+  padding: 1rem;
+  display: flex;
+  gap: 1rem;
+  border-top: 1px solid;
+}
+
+.light .card-actions {
+  border-color: var(--light-border);
+}
+
+.dark .card-actions {
+  border-color: var(--dark-border);
+}
+
+.contest-link, .solution-link {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: background-color 0.2s;
+}
+
+.contest-link {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.contest-link:hover {
+  background-color: var(--primary-dark);
+  color: white;
+  text-decoration: none;
+}
+
+.solution-link {
+  background-color: #ff0000;
+  color: white;
+}
+
+.solution-link:hover {
+  background-color: #cc0000;
+  color: white;
+  text-decoration: none;
+} 

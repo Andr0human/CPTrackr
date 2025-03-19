@@ -1,0 +1,124 @@
+.admin-form {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.admin-form.dark {
+  color: var(--dark-text);
+}
+
+.admin-form.light {
+  color: var(--light-text);
+}
+
+.admin-form h2 {
+  margin-bottom: 1rem;
+  font-size: 2rem;
+}
+
+.admin-description {
+  margin-bottom: 2rem;
+  color: var(--secondary-color);
+}
+
+.solution-form {
+  padding: 2rem;
+  border-radius: 8px;
+  margin-bottom: 2rem;
+}
+
+.solution-form.light {
+  background-color: var(--light-card-bg);
+  border: 1px solid var(--light-border);
+}
+
+.solution-form.dark {
+  background-color: var(--dark-card-bg);
+  border: 1px solid var(--dark-border);
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.form-group select, .form-group input {
+  width: 100%;
+  padding: 0.75rem;
+  border-radius: 4px;
+  font-size: 1rem;
+  border: 1px solid;
+}
+
+.light .form-group select, .light .form-group input {
+  border-color: var(--light-border);
+  background-color: var(--light-card-bg);
+  color: var(--light-text);
+}
+
+.dark .form-group select, .dark .form-group input {
+  border-color: var(--dark-border);
+  background-color: var(--dark-card-bg);
+  color: var(--dark-text);
+}
+
+.submit-btn {
+  background-color: var(--primary-color);
+  color: white;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 500;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.submit-btn:hover {
+  background-color: var(--primary-dark);
+}
+
+.submit-status {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  border-radius: 4px;
+  text-align: center;
+}
+
+.submit-status.success {
+  background-color: rgba(40, 167, 69, 0.1);
+  color: var(--success-color);
+}
+
+.submit-status.error {
+  background-color: rgba(220, 53, 69, 0.1);
+  color: var(--error-color);
+}
+
+.youtube-playlists {
+  margin-top: 3rem;
+}
+
+.youtube-playlists h3 {
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+}
+
+.youtube-playlists ul {
+  list-style-type: none;
+}
+
+.youtube-playlists li {
+  margin-bottom: 0.75rem;
+}
+
+.youtube-playlists a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+} 

@@ -1,0 +1,30 @@
+.bookmarked-contests {
+  width: 100%;
+}
+
+.bookmarked-contests.dark {
+  color: var(--dark-text);
+}
+
+.bookmarked-contests.light {
+  color: var(--light-text);
+}
+
+.bookmarked-contests h2 {
+  margin-bottom: 1.5rem;
+  font-size: 2rem;
+}
+
+.no-bookmarks {
+  text-align: center;
+  padding: 3rem;
+  background-color: rgba(108, 117, 125, 0.1);
+  border-radius: 8px;
+  font-size: 1.1rem;
+  line-height: 1.8;
+}
+
+.no-bookmarks p:first-child {
+  font-weight: 600;
+  margin-bottom: 1rem;
+} 
