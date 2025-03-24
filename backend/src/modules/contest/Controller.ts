@@ -12,7 +12,12 @@ class ContestController {
   getContest = async (req: Request, res: Response): Promise<void> => {
     try {
       const { body } = req;
-      const { platforms = ['codeforces', 'codechef', 'leetcode'], ids = [] } = body;
+      const {
+        platforms = ['codeforces', 'codechef', 'leetcode'],
+        ids,
+        startDate,
+        endDate,
+      } = body;
 
       // Initialize array to store promises for selected platforms
       const platformPromises = [];
@@ -46,18 +51,35 @@ class ContestController {
         contestData = [...contestData, ...data];
       });
 
-      if (Array.isArray(ids) && ids.length > 0)
+      // Apply ID filter if IDs are provided
+      if (Array.isArray(ids)) {
         contestData = this.contestService.filterByIds(contestData, ids);
+      }
+
+      // Apply date range filter if dates are provided
+      contestData = this.contestService.filterByDateRange(
+        contestData,
+        startDate,
+        endDate
+      );
 
       const finalData = this.contestService
         .sortContestsByStartTime(contestData)
         .filter((contest) => status.includes(contest.status));
 
       // Return the combined data
-      new SystemResponse(res, 'Contest data fetched successfully', finalData).ok();
+      new SystemResponse(
+        res,
+        'Contest data fetched successfully',
+        finalData
+      ).ok();
     } catch (err: unknown) {
       console.error('Error fetching contest data', err);
-      new SystemResponse(res, 'Contest data fetched successfully', err).internalServerError();
+      new SystemResponse(
+        res,
+        'Contest data fetched successfully',
+        err
+      ).internalServerError();
     }
   };
 }

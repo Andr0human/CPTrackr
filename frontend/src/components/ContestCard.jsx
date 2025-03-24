@@ -14,20 +14,13 @@ const urlPrefix = {
   codechef: "codechef.com",
 };
 
-const ContestCard = ({ contest }) => {
+const ContestCard = ({ contest, onToggleBookMark }) => {
   const { darkMode } = useContext(ThemeContext);
-  const [isBookmarked, setIsBookmarked] = useState(false);
+  const { isBookmarked } = contest;
   const [timeRemaining, setTimeRemaining] = useState("");
   const contestUrl = `https://${urlPrefix[contest.platform.toLowerCase()]}/${
     contest.code
   }`;
-
-  useEffect(() => {
-    const bookmarks = JSON.parse(
-      localStorage.getItem("bookmarkedContests") || "[]"
-    );
-    setIsBookmarked(bookmarks.some((elem) => elem.code === contest.code));
-  }, [contest.code]);
 
   // Update time remaining for upcoming contests
   useEffect(() => {
@@ -62,30 +55,6 @@ const ContestCard = ({ contest }) => {
 
     return () => clearInterval(timer);
   }, [contest.startTime, contest.status]);
-
-  const toggleBookmark = () => {
-    const bookmarks = JSON.parse(
-      localStorage.getItem("bookmarkedContests") || "[]"
-    );
-    const isBookmarked = bookmarks.some((elem) => elem.code == contest.code);
-
-    console.log("isbookmarked =", isBookmarked);
-
-    if (isBookmarked) {
-      const updatedBookmarks = bookmarks.filter(
-        (elem) => elem != contest.code
-      );
-      localStorage.setItem(
-        "bookmarkedContests",
-        JSON.stringify(updatedBookmarks.map((contest) => contest.code))
-      );
-    } else {
-      bookmarks.push(contest);
-      localStorage.setItem("bookmarkedContests", JSON.stringify(bookmarks));
-    }
-
-    setIsBookmarked(!isBookmarked);
-  };
 
   const formatDate = (dateString) => {
     const options = {
@@ -126,7 +95,7 @@ const ContestCard = ({ contest }) => {
         <span className={getPlatformClass()}>{contest.platform}</span>
         <button
           className="bookmark-btn"
-          onClick={toggleBookmark}
+          onClick={onToggleBookMark}
           aria-label={isBookmarked ? "Remove bookmark" : "Add bookmark"}
         >
           {isBookmarked ? <FaBookmark /> : <FaRegBookmark />}

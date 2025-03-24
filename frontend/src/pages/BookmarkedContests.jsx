@@ -10,45 +10,69 @@ const BookmarkedContests = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    const fetchBookmarkedContests = async () => {
-      const bookmarkIds = JSON.parse(
+  const fetchBookmarkedContests = async () => {
+    const bookmarkIds = JSON.parse(
+      localStorage.getItem("bookmarkedContests") || "[]"
+    );
+
+    if (bookmarkIds.length === 0) {
+      setBookmarkedContests([]);
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const response = await apiInstance.post("/contest", {
+        ids: bookmarkIds,
+        showPast: true,
+        showPresent: true,
+        showUpcoming: true,
+      });
+      const contests = response?.data?.data;
+      const bookmarkedContests = JSON.parse(
         localStorage.getItem("bookmarkedContests") || "[]"
       );
 
-      try {
-        const response = await apiInstance.post("/contest", {
-          ids: bookmarkIds,
-        });
-        const contests = response?.data?.data;
-        setBookmarkedContests(contests);
-        setLoading(false);
-      } catch (err) {
-        console.error("Error fetching contests:", err);
-        setError(err.message || "Failed to fetch contests");
-        setLoading(false);
-      }
-    };
+      const contestsWithBookmark = contests.map((contest) => ({
+        ...contest,
+        isBookmarked: bookmarkedContests.includes(contest.code),
+      }));
 
+      setBookmarkedContests(contestsWithBookmark);
+      setLoading(false);
+    } catch (err) {
+      console.error("Error fetching contests:", err);
+      setError(err.message || "Failed to fetch contests");
+      setLoading(false);
+    }
+  };
+
+  const toggleBookmark = (contestCode, isBookmarked) => {
+    let bookmarkedContests = JSON.parse(
+      localStorage.getItem("bookmarkedContests") || "[]"
+    );
+
+    if (!isBookmarked) {
+      bookmarkedContests.push(contestCode);
+    } else {
+      bookmarkedContests = bookmarkedContests.filter(
+        (code) => code !== contestCode
+      );
+    }
+
+    localStorage.setItem(
+      "bookmarkedContests",
+      JSON.stringify(bookmarkedContests)
+    );
+
+    setBookmarkedContests((prevContests) =>
+      prevContests.filter((contest) => contest.code !== contestCode)
+    );
+  };
+
+  useEffect(() => {
     fetchBookmarkedContests();
-
-    // Add event listener for storage changes (in case bookmarks are updated in another tab)
-    window.addEventListener("storage", fetchBookmarkedContests);
-
-    return () => {
-      window.removeEventListener("storage", fetchBookmarkedContests);
-    };
   }, []);
-
-  // Separate contests into upcoming and past
-  const now = new Date();
-  const upcomingContests = bookmarkedContests
-    .filter((contest) => new Date(contest.startTime) > now)
-    .sort((a, b) => new Date(a.startTime) - new Date(b.startTime));
-
-  const pastContests = bookmarkedContests
-    .filter((contest) => new Date(contest.startTime) <= now)
-    .sort((a, b) => new Date(b.startTime) - new Date(a.startTime));
 
   return (
     <div className={`bookmarked-contests ${darkMode ? "dark" : "light"}`}>
@@ -68,27 +92,20 @@ const BookmarkedContests = () => {
         </div>
       ) : (
         <div className="contests-container">
-          {upcomingContests.length > 0 && (
-            <section className="contests-section">
-              <h3>Upcoming Bookmarked Contests</h3>
-              <div className="contest-grid">
-                {upcomingContests.map((contest) => (
-                  <ContestCard key={contest.code} contest={contest} />
-                ))}
-              </div>
-            </section>
-          )}
-
-          {pastContests.length > 0 && (
-            <section className="contests-section">
-              <h3>Past Bookmarked Contests</h3>
-              <div className="contest-grid">
-                {pastContests.map((contest) => (
-                  <ContestCard key={contest.code} contest={contest} />
-                ))}
-              </div>
-            </section>
-          )}
+          <section className="contests-section">
+            <h3>All Bookmarked Contests</h3>
+            <div className="contest-grid">
+              {bookmarkedContests.map((contest) => (
+                <ContestCard
+                  key={contest.code}
+                  contest={contest}
+                  onToggleBookMark={() =>
+                    toggleBookmark(contest.code, contest.isBookmarked)
+                  }
+                />
+              ))}
+            </div>
+          </section>
         </div>
       )}
     </div>

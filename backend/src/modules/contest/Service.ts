@@ -16,8 +16,10 @@ class ContestService {
 
   getLeetCodeData = async () => {
     try {
-      const leetcodeResponse = await axios.post('https://leetcode.com/graphql', {
-        query: `
+      const leetcodeResponse = await axios.post(
+        this.leetCodeApi,
+        {
+          query: `
             query contestList {
               allContests {
                 title
@@ -27,26 +29,25 @@ class ContestService {
               }
             }
           `,
-      });
+        }
+      );
 
       const contests = leetcodeResponse.data.data.allContests;
-      const currentTime = Math.floor(Date.now() / 1000); // Current time in seconds
-      const sevenDaysInSeconds = 7 * 24 * 60 * 60; // 7 days in seconds
+      const currentTime = Math.floor(Date.now() / 1000);
 
-      // Filter past contests to only include those less than 2 days old
       const past = contests.filter(
-        (contest: any) =>
-          contest.startTime + contest.duration <= currentTime &&
-          currentTime - (contest.startTime + contest.duration) <= sevenDaysInSeconds
+        (contest: any) => contest.startTime + contest.duration <= currentTime
       );
 
-      // Separate contests into present (ongoing) and future
       const present = contests.filter(
         (contest: any) =>
-          contest.startTime <= currentTime && contest.startTime + contest.duration > currentTime
+          contest.startTime <= currentTime &&
+          contest.startTime + contest.duration > currentTime
       );
 
-      const future = contests.filter((contest: any) => contest.startTime > currentTime);
+      const future = contests.filter(
+        (contest: any) => contest.startTime > currentTime
+      );
       return [
         ...this.formatLeetCodeData(past, 'past'),
         ...this.formatLeetCodeData(present, 'present'),
@@ -71,25 +72,18 @@ class ContestService {
 
   getCodechefData = async () => {
     try {
-      const codechefResponse = await axios.get(
-        'https://www.codechef.com/api/list/contests/all?sort_by=START&offset=0&mode=all'
-      );
-
-      const currentTime = Math.floor(Date.now() / 1000); // Current time in seconds
-      const sevenDaysInSeconds = 2 * 24 * 60 * 60; // 2 days in seconds
-
-      // Filter past contests to only include those less than 2 days old
-      const pastContests = codechefResponse.data.past_contests.filter((contest: any) => {
-        const endTime =
-          new Date(contest.contest_start_date_iso).getTime() / 1000 +
-          parseInt(contest.contest_duration, 10) * 60;
-        return currentTime - endTime <= sevenDaysInSeconds;
-      });
+      const codechefResponse = await axios.get(this.codechefApi);
 
       return [
-        ...this.formatCodechefData(pastContests, 'past'),
-        ...this.formatCodechefData(codechefResponse.data.present_contests, 'present'),
-        ...this.formatCodechefData(codechefResponse.data.future_contests, 'future'),
+        ...this.formatCodechefData(codechefResponse.data.past_contests, 'past'),
+        ...this.formatCodechefData(
+          codechefResponse.data.present_contests,
+          'present'
+        ),
+        ...this.formatCodechefData(
+          codechefResponse.data.future_contests,
+          'future'
+        ),
       ];
     } catch (error) {
       console.error('Error fetching Codechef data:', error);
@@ -103,27 +97,25 @@ class ContestService {
       code: contest.contest_code,
       platform: 'codechef',
       status,
-      startTime: new Date(contest.contest_start_date_iso).getTime() / 1000, // Convert to Unix timestamp (seconds)
-      duration: parseInt(contest.contest_duration, 10) * 60, // Convert minutes to seconds
+      startTime: new Date(contest.contest_start_date_iso).getTime() / 1000,
+      duration: parseInt(contest.contest_duration, 10) * 60,
     }));
   };
 
   getCodeforcesData = async () => {
     try {
-      const codeforcesResponse = await axios.get('https://codeforces.com/api/contest.list?');
+      const codeforcesResponse = await axios.get(this.codeforcesApi);
 
       const contests = codeforcesResponse.data.result;
-      const currentTime = Math.floor(Date.now() / 1000); // Current time in seconds
-      const sevenDaysInSeconds = 2 * 24 * 60 * 60; // 2 days in seconds
+      const currentTime = Math.floor(Date.now() / 1000);
 
-      // Filter past contests to only include those less than 2 days old
       const past = contests.filter(
-        (contest: any) =>
-          contest.phase === 'FINISHED' &&
-          currentTime - (contest.startTimeSeconds + contest.durationSeconds) <= sevenDaysInSeconds
+        (contest: any) => contest.phase === 'FINISHED'
       );
 
-      const upcoming = contests.filter((contest: any) => contest.phase === 'BEFORE');
+      const upcoming = contests.filter(
+        (contest: any) => contest.phase === 'BEFORE'
+      );
 
       const present = upcoming.filter(
         (contest: any) =>
@@ -131,7 +123,9 @@ class ContestService {
           contest.startTimeSeconds + contest.durationSeconds > currentTime
       );
 
-      const future = upcoming.filter((contest: any) => contest.startTimeSeconds > currentTime);
+      const future = upcoming.filter(
+        (contest: any) => contest.startTimeSeconds > currentTime
+      );
 
       return [
         ...this.formatCodeforcesData(past, 'past'),
@@ -160,7 +154,45 @@ class ContestService {
   };
 
   filterByIds = (contests: any[], ids: string[]) => {
-    return contests.filter(contest => ids.includes(contest.code));
+    return contests.filter((contest) => ids.includes(contest.code));
+  };
+
+  filterByDateRange = (
+    contests: any[],
+    startDate?: string,
+    endDate?: string
+  ) => {
+    // If no dates are provided, return all contests
+    if (!startDate && !endDate) {
+      return contests;
+    }
+
+    return contests.filter((contest) => {
+      // Convert contest startTime (in seconds) to milliseconds
+      const contestDate = new Date(contest.startTime * 1000);
+
+      // Check if contest is after startDate (if provided)
+      if (startDate) {
+        const startDateObj = new Date(startDate);
+        // Set start date to beginning of the day
+        startDateObj.setHours(0, 0, 0, 0);
+        if (contestDate < startDateObj) {
+          return false;
+        }
+      }
+
+      // Check if contest is before endDate (if provided)
+      if (endDate) {
+        const endDateObj = new Date(endDate);
+        // Set end date to end of the day
+        endDateObj.setHours(23, 59, 59, 999);
+        if (contestDate > endDateObj) {
+          return false;
+        }
+      }
+
+      return true;
+    });
   };
 }
 

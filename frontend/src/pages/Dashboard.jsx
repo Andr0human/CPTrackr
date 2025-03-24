@@ -33,19 +33,18 @@ const Dashboard = () => {
   const fetchContests = useCallback(async () => {
     try {
       const response = await apiInstance.post("/contest", filters);
-      const newContests = response?.data?.data;
+      let newContests = response?.data?.data;
+
+      const bookmarkedContests = JSON.parse(
+        localStorage.getItem("bookmarkedContests") || "[]"
+      );
+
+      newContests = newContests.map((contest) => ({
+        ...contest,
+        isBookmarked: bookmarkedContests.includes(contest.code),
+      }));
+
       setContests(newContests);
-
-      setPastContests(
-        newContests.filter((contest) => contest.status === "past")
-      );
-      setPresentContests(
-        newContests.filter((contest) => contest.status === "present")
-      );
-      setUpcomingContests(
-        newContests.filter((contest) => contest.status === "future")
-      );
-
       setLoading(false);
     } catch (err) {
       console.error("Error fetching contests:", err);
@@ -55,11 +54,48 @@ const Dashboard = () => {
   }, [filters]);
 
   useEffect(() => {
+    setPastContests(contests.filter((contest) => contest.status === "past"));
+    setPresentContests(
+      contests.filter((contest) => contest.status === "present")
+    );
+    setUpcomingContests(
+      contests.filter((contest) => contest.status === "future")
+    );
+  }, [contests]);
+
+  useEffect(() => {
     fetchContests();
   }, [fetchContests]);
 
   const handleFilterChange = (newFilters) => {
     setFilters(newFilters);
+  };
+
+  const toggleBookmark = (contestCode, isBookmarked) => {
+    let bookmarkedContests = JSON.parse(
+      localStorage.getItem("bookmarkedContests") || "[]"
+    );
+
+    if (!isBookmarked) {
+      bookmarkedContests.push(contestCode);
+    } else {
+      bookmarkedContests = bookmarkedContests.filter(
+        (code) => code !== contestCode
+      );
+    }
+
+    localStorage.setItem(
+      "bookmarkedContests",
+      JSON.stringify(bookmarkedContests)
+    );
+
+    setContests((prevContests) =>
+      prevContests.map((contest) =>
+        contest.code === contestCode
+          ? { ...contest, isBookmarked: !isBookmarked }
+          : contest
+      )
+    );
   };
 
   return (
@@ -79,7 +115,13 @@ const Dashboard = () => {
               <h3>Ongoing Contests</h3>
               <div className="contest-grid">
                 {presentContests.map((contest) => (
-                  <ContestCard key={contest.code} contest={contest} />
+                  <ContestCard
+                    key={contest.code}
+                    contest={contest}
+                    onToggleBookMark={() =>
+                      toggleBookmark(contest.code, contest.isBookmarked)
+                    }
+                  />
                 ))}
               </div>
             </section>
@@ -90,7 +132,13 @@ const Dashboard = () => {
               <h3>Upcoming Contests</h3>
               <div className="contest-grid">
                 {upcomingContests.map((contest) => (
-                  <ContestCard key={contest.code} contest={contest} />
+                  <ContestCard
+                    key={contest.code}
+                    contest={contest}
+                    onToggleBookMark={() =>
+                      toggleBookmark(contest.code, contest.isBookmarked)
+                    }
+                  />
                 ))}
               </div>
             </section>
@@ -101,7 +149,13 @@ const Dashboard = () => {
               <h3>Past Contests</h3>
               <div className="contest-grid">
                 {pastContests.map((contest) => (
-                  <ContestCard key={contest.code} contest={contest} />
+                  <ContestCard
+                    key={contest.code}
+                    contest={contest}
+                    onToggleBookMark={() =>
+                      toggleBookmark(contest.code, contest.isBookmarked)
+                    }
+                  />
                 ))}
               </div>
             </section>
