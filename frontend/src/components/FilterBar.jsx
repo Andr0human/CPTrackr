@@ -1,10 +1,16 @@
-import { useContext } from 'react';
-import { FaFilter } from 'react-icons/fa';
-import { ThemeContext } from '../contexts';
-import '../styles/FilterBar.css';
+import { useContext, useState } from "react";
+import { FaChevronDown, FaFilter } from "react-icons/fa";
+import { ThemeContext } from "../contexts";
+import "../styles/FilterBar.css";
+import DateRangePicker from "./DateRangePicker";
 
 const FilterBar = ({ filters, onFilterChange }) => {
   const { darkMode } = useContext(ThemeContext);
+  const [dateRange, setDateRange] = useState([
+    filters.startDate,
+    filters.endDate,
+  ]);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const handlePlatformChange = (platform) => {
     const updatedPlatforms = [...filters.platforms];
@@ -45,70 +51,107 @@ const FilterBar = ({ filters, onFilterChange }) => {
     });
   };
 
+  const handleDateChange = (newDateRange) => {
+    setDateRange(newDateRange);
+    onFilterChange({
+      ...filters,
+      startDate: newDateRange[0],
+      endDate: newDateRange[1],
+    });
+  };
+
+  const toggleDropdown = () => {
+    setIsDropdownOpen(!isDropdownOpen);
+  };
+
+  // Platform options for the dropdown
+  const platformOptions = [
+    { id: "codeforces", name: "Codeforces", className: "codeforces" },
+    { id: "codechef", name: "CodeChef", className: "codechef" },
+    { id: "leetcode", name: "LeetCode", className: "leetcode" },
+  ];
+
   return (
-    <div className={`filter-bar ${darkMode ? 'dark' : 'light'}`}>
-      <div className='filter-header'>
-        <FaFilter />
+    <div className={`filter-bar ${darkMode ? "dark" : "light"}`}>
+      <div className="filter-header">
+        <FaFilter className="filter-icon" />
         <h3>Filters</h3>
       </div>
 
-      <div className='filter-section'>
-        <h4>Platforms</h4>
-        <div className='platform-filters'>
-          <label className='platform-checkbox'>
-            <input
-              type='checkbox'
-              checked={filters.platforms.includes('codeforces')}
-              onChange={() => handlePlatformChange('codeforces')}
-            />
-            <span className='platform-name codeforces'>Codeforces</span>
-          </label>
+      <div className="filter-content">
+        <DateRangePicker
+          startDate={dateRange[0]}
+          endDate={dateRange[1]}
+          onDateChange={handleDateChange}
+        />
 
-          <label className='platform-checkbox'>
-            <input
-              type='checkbox'
-              checked={filters.platforms.includes('codechef')}
-              onChange={() => handlePlatformChange('codechef')}
-            />
-            <span className='platform-name codechef'>CodeChef</span>
-          </label>
+        <div className="filter-section">
+          <h4>Platforms</h4>
+          <div className="platform-dropdown-container">
+            <div className="platform-dropdown-header" onClick={toggleDropdown}>
+              <span>
+                {filters.platforms.length === 0
+                  ? "Select Platforms"
+                  : `Selected (${filters.platforms.length})`}
+              </span>
+              <FaChevronDown
+                className={`dropdown-arrow ${isDropdownOpen ? "open" : ""}`}
+              />
+            </div>
 
-          <label className='platform-checkbox'>
-            <input
-              type='checkbox'
-              checked={filters.platforms.includes('leetcode')}
-              onChange={() => handlePlatformChange('leetcode')}
-            />
-            <span className='platform-name leetcode'>LeetCode</span>
-          </label>
+            {isDropdownOpen && (
+              <div className="platform-dropdown-menu">
+                {platformOptions.map((platform) => (
+                  <div
+                    key={platform.id}
+                    className="platform-dropdown-item"
+                    onClick={() => handlePlatformChange(platform.id)}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={filters.platforms.includes(platform.id)}
+                      readOnly
+                    />
+                    <span className={`platform-name ${platform.className}`}>
+                      {platform.name}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
-      </div>
 
-      <div className='filter-section'>
-        <h4>Contest Status</h4>
-        <div className='status-filters'>
-          <label className='status-checkbox'>
-            <input
-              type='checkbox'
-              checked={filters.showPresent}
-              onChange={handleShowPresentChange}
-            />
-            <span>Ongoing Contests</span>
-          </label>
+        <div className="filter-section">
+          <h4>Contest Status</h4>
+          <div className="status-filters">
+            <label className="status-checkbox">
+              <input
+                type="checkbox"
+                checked={filters.showPresent}
+                onChange={handleShowPresentChange}
+              />
+              <span>Ongoing Contests</span>
+            </label>
 
-          <label className='status-checkbox'>
-            <input
-              type='checkbox'
-              checked={filters.showUpcoming}
-              onChange={handleShowUpcomingChange}
-            />
-            <span>Upcoming Contests</span>
-          </label>
+            <label className="status-checkbox">
+              <input
+                type="checkbox"
+                checked={filters.showUpcoming}
+                onChange={handleShowUpcomingChange}
+              />
+              <span>Upcoming Contests</span>
+            </label>
 
-          <label className='status-checkbox'>
-            <input type='checkbox' checked={filters.showPast} onChange={handleShowPastChange} />
-            <span>Past Contests</span>
-          </label>
+            <label className="status-checkbox">
+              <input
+                type="checkbox"
+                checked={filters.showPast}
+                onChange={handleShowPastChange}
+              />
+              <span>Past Contests</span>
+            </label>
+          </div>
         </div>
       </div>
     </div>
