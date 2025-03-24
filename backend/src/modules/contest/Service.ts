@@ -158,6 +158,10 @@ class ContestService {
   sortContestsByStartTime = (contests: any[]) => {
     return [...contests].sort((a, b) => a.startTime - b.startTime);
   };
+
+  filterByIds = (contests: any[], ids: string[]) => {
+    return contests.filter(contest => ids.includes(contest.code));
+  };
 }
 
 export default ContestService;

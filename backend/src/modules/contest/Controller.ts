@@ -12,7 +12,7 @@ class ContestController {
   getContest = async (req: Request, res: Response): Promise<void> => {
     try {
       const { body } = req;
-      const { platforms = ['codeforces', 'codechef', 'leetcode'] } = body;
+      const { platforms = ['codeforces', 'codechef', 'leetcode'], ids = [] } = body;
 
       // Initialize array to store promises for selected platforms
       const platformPromises = [];
@@ -45,6 +45,9 @@ class ContestController {
       results.forEach((data) => {
         contestData = [...contestData, ...data];
       });
+
+      if (Array.isArray(ids) && ids.length > 0)
+        contestData = this.contestService.filterByIds(contestData, ids);
 
       const finalData = this.contestService
         .sortContestsByStartTime(contestData)

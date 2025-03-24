@@ -20,9 +20,6 @@ const Navbar = () => {
           <Link to='/bookmarks' className='nav-link'>
             <FaBookmark /> Bookmarks
           </Link>
-          <Link to='/admin' className='nav-link'>
-            <FaLock /> Admin
-          </Link>
           <button onClick={toggleTheme} className='theme-toggle'>
             {darkMode ? <FaSun /> : <FaMoon />}
           </button>

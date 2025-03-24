@@ -73,11 +73,11 @@ const ContestCard = ({ contest }) => {
 
     if (isBookmarked) {
       const updatedBookmarks = bookmarks.filter(
-        (elem) => elem.code != contest.code
+        (elem) => elem != contest.code
       );
       localStorage.setItem(
         "bookmarkedContests",
-        JSON.stringify(updatedBookmarks)
+        JSON.stringify(updatedBookmarks.map((contest) => contest.code))
       );
     } else {
       bookmarks.push(contest);
